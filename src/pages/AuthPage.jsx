@@ -34,7 +34,11 @@ export default function AuthPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
-    if (!username.trim() || !password.trim()) { setError('All fields required'); return; }
+    // ── Client-side validation (catches issues before hitting server)
+    if (!username.trim() || !password.trim()) { setError('All fields are required'); return; }
+    if (username.trim().length < 3)  { setError('Username must be at least 3 characters'); return; }
+    if (username.trim().length > 20) { setError('Username must be 20 characters or less'); return; }
+    if (password.length < 4)         { setError('Password must be at least 4 characters'); return; }
     if (tab === 'register' && password !== confirm) { setError('Passwords do not match'); return; }
     setLoading(true);
     try {
@@ -42,7 +46,13 @@ export default function AuthPage() {
       else                 await register(username.trim(), password);
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      // Give a friendlier message when the backend is unreachable
+      const msg = err.message || '';
+      if (msg === 'Registration failed' || msg === 'Login failed' || msg.includes('connect')) {
+        setError('⚠️ Cannot reach server. Make sure the backend is running.');
+      } else {
+        setError(msg);
+      }
     } finally { setLoading(false); }
   }
 
@@ -160,6 +170,11 @@ export default function AuthPage() {
               </div>
             )}
 
+            {tab === 'register' && !error && (
+              <div style={{ textAlign: 'center', color: '#94a3b8', fontFamily: 'Nunito, sans-serif', fontSize: 12, fontWeight: 600 }}>
+                Username 3–20 chars · Password min 4 chars
+              </div>
+            )}
             {error && (
               <div style={{ textAlign: 'center', color: '#e53935', fontFamily: 'Nunito, sans-serif', fontWeight: 700, fontSize: 14 }}>
                 {error}

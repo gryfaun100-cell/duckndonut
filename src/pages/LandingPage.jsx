@@ -1,5 +1,5 @@
 // src/pages/LandingPage.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import socket from '../socket';
@@ -146,6 +146,7 @@ export default function LandingPage() {
   const [error,       setError]       = useState('');
   const [loading,     setLoading]     = useState(false);
   const [showTutorial,setShowTutorial]= useState(false);
+  const roomTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (!localStorage.getItem('tutorial_seen') && isGuest) {
@@ -155,6 +156,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     function onCreated({ code, playerId, playerIndex }) {
+      clearTimeout(roomTimeoutRef.current);
       sessionStorage.setItem('playerName',  displayName);
       sessionStorage.setItem('roomCode',    code);
       sessionStorage.setItem('playerId',    playerId);
@@ -163,6 +165,7 @@ export default function LandingPage() {
       navigate('/lobby');
     }
     function onJoined({ code, playerId, playerIndex }) {
+      clearTimeout(roomTimeoutRef.current);
       sessionStorage.setItem('playerName',  displayName);
       sessionStorage.setItem('roomCode',    code);
       sessionStorage.setItem('playerId',    playerId);
@@ -188,8 +191,16 @@ export default function LandingPage() {
       setTimeout(() => { setMode(null); navigate('/auth'); }, 1500);
       return;
     }
+    if (!socket.connected) {
+      setError('⚠️ Cannot connect to game server. Make sure the backend is running.');
+      return;
+    }
     setError(''); setLoading(true); playTone(440, 0.1);
     socket.emit('create_room', { name: displayName, userId: user?.id || null, maxPlayers });
+    roomTimeoutRef.current = setTimeout(() => {
+      setLoading(false);
+      setError('⚠️ Server not responding. Please check your connection.');
+    }, 5000);
   }
   function handleJoin() {
     if (!displayName) {
@@ -197,9 +208,17 @@ export default function LandingPage() {
       setTimeout(() => { setMode(null); navigate('/auth'); }, 1500);
       return;
     }
+    if (!socket.connected) {
+      setError('⚠️ Cannot connect to game server. Make sure the backend is running.');
+      return;
+    }
     if (!joinCode.trim()) { setError('Please enter a room code'); return; }
     setError(''); setLoading(true); playTone(440, 0.1);
     socket.emit('join_room', { name: displayName, code: joinCode.trim().toUpperCase(), userId: user?.id || null });
+    roomTimeoutRef.current = setTimeout(() => {
+      setLoading(false);
+      setError('⚠️ Server not responding. Please check your connection.');
+    }, 5000);
   }
 
   return (

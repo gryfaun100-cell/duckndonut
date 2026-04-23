@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { apiUrl } from '../api';
 
 /* ── small helpers ── */
 function StatCard({ emoji, value, label, color, bg }) {
@@ -77,8 +78,8 @@ export default function AdminPage() {
     setLoading(true);
     const h = { Authorization: `Bearer ${token}` };
     const [ur, gr] = await Promise.all([
-      fetch('/api/admin/users', { headers: h }),
-      fetch('/api/admin/games', { headers: h }),
+      fetch(apiUrl('/api/admin/users'), { headers: h }),
+      fetch(apiUrl('/api/admin/games'), { headers: h }),
     ]);
     if (ur.ok) { const d = await ur.json(); setUsers(d.users || []); }
     if (gr.ok) { const d = await gr.json(); setGames(d.games || []); }
@@ -86,7 +87,7 @@ export default function AdminPage() {
   }
 
   async function changeRole(uid, role) {
-    const res = await fetch(`/api/admin/users/${uid}/role`, {
+    const res = await fetch(apiUrl(`/api/admin/users/${uid}/role`), {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ role }),
@@ -96,7 +97,7 @@ export default function AdminPage() {
 
   async function toggleBan(u) {
     const ep = u.banned ? 'unban' : 'ban';
-    const res = await fetch(`/api/admin/users/${u.id}/${ep}`, {
+    const res = await fetch(apiUrl(`/api/admin/users/${u.id}/${ep}`), {
       method: 'PATCH', headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { apiUrl } from '../api';
 
 const RESULT_CFG = {
   win:  { emoji:'🏆', label:'Win',  bg:'#dcfce7', color:'#16a34a', border:'#86efac' },
@@ -73,14 +74,14 @@ export default function ProfilePage() {
 
   async function fetchFriends() {
     try {
-      const res = await fetch('/api/friends', { headers:{ Authorization:`Bearer ${token}` } });
+      const res = await fetch(apiUrl('/api/friends'), { headers:{ Authorization:`Bearer ${token}` } });
       if (res.ok) { const d = await res.json(); setFriends(d.friends || []); }
     } catch (_) {}
   }
 
   async function fetchAchievements() {
     try {
-      const res = await fetch('/api/achievements/me', { headers:{ Authorization:`Bearer ${token}` } });
+      const res = await fetch(apiUrl('/api/achievements/me'), { headers:{ Authorization:`Bearer ${token}` } });
       if (res.ok) {
         const d = await res.json();
         setAchievements(d.achievements || []);
@@ -93,7 +94,7 @@ export default function ProfilePage() {
     e.preventDefault();
     setAddError(''); setAddSuccess(''); setLoading(true);
     try {
-      const res = await fetch('/api/friends/add', {
+      const res = await fetch(apiUrl('/api/friends/add'), {
         method:'POST',
         headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
         body: JSON.stringify({ username: addName.trim() }),

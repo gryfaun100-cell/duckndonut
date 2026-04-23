@@ -1,5 +1,5 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { apiUrl } from '../api';
 
 const AuthContext = createContext(null);
 
@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
     const guestName   = sessionStorage.getItem(GUEST_KEY);
 
     if (storedToken) {
-      fetch('/api/auth/me', { headers: { Authorization: `Bearer ${storedToken}` } })
+      fetch(apiUrl('/api/auth/me'), { headers: { Authorization: `Bearer ${storedToken}` } })
         .then(async r => {
           if (!r.ok) throw new Error('auth failed');
           const d = await safeJson(r);
@@ -51,7 +51,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (username, password) => {
     let res;
     try {
-      res = await fetch('/api/auth/login', {
+      res = await fetch(apiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -72,7 +72,7 @@ export function AuthProvider({ children }) {
   const register = useCallback(async (username, password) => {
     let res;
     try {
-      res = await fetch('/api/auth/register', {
+      res = await fetch(apiUrl('/api/auth/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -109,7 +109,7 @@ export function AuthProvider({ children }) {
   const refreshUser = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(apiUrl('/api/auth/me'), { headers: { Authorization: `Bearer ${token}` } });
       if (res.ok) { const d = await safeJson(res); if (d.user) setUser(d.user); }
     } catch (_) {}
   }, [token]);
