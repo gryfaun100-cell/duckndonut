@@ -1,0 +1,84 @@
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+/* ── Root Variables ──────────────────────────────────────────────────────── */
+:root {
+  --sky-top:   #87CEEB;
+  --sky-mid:   #4fc3f7;
+  --sky-bot:   #0288d1;
+  --card-bg:   rgba(255,255,255,0.97);
+  --shadow:    0 8px 40px rgba(0,0,0,0.16);
+  --font-head: 'Fredoka One', cursive;
+  --font-body: 'Nunito', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: linear-gradient(160deg, var(--sky-top) 0%, var(--sky-mid) 50%, var(--sky-bot) 100%);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* ── Keyframes ───────────────────────────────────────────────────────────── */
+@keyframes wave     { 0%,100%{background-position:0 50%} 50%{background-position:100% 50%} }
+@keyframes bob      { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-7px) rotate(2deg)} }
+@keyframes float-slow { 0%,100%{transform:translateX(0) translateY(0)} 40%{transform:translateX(14px) translateY(-7px)} 70%{transform:translateX(-7px) translateY(5px)} }
+@keyframes slide-up { from{transform:translateY(24px);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes fade-in  { from{opacity:0} to{opacity:1} }
+@keyframes countdown-pop { 0%{transform:scale(.3) rotate(-10deg);opacity:0} 60%{transform:scale(1.2) rotate(3deg);opacity:1} 100%{transform:scale(1) rotate(0);opacity:1} }
+@keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0);opacity:1} 100%{transform:translateY(90px) rotate(720deg);opacity:0} }
+@keyframes trophy-bounce { 0%,100%{transform:translateY(0) rotate(-5deg) scale(1)} 50%{transform:translateY(-18px) rotate(5deg) scale(1.1)} }
+@keyframes powerup-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+@keyframes powerup-glow  { 0%,100%{box-shadow:0 0 8px 2px rgba(255,214,0,.5)} 50%{box-shadow:0 0 20px 6px rgba(255,214,0,.9)} }
+@keyframes fire-border   { 0%,100%{border-color:#ff5722;box-shadow:0 0 12px rgba(255,87,34,.6)} 50%{border-color:#ffd600;box-shadow:0 0 24px rgba(255,214,0,.8)} }
+@keyframes timer-shrink  { from{width:100%} to{width:0%} }
+@keyframes frozen-shake  { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+@keyframes fire-shake    { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-2deg)} 75%{transform:rotate(2deg)} }
+@keyframes correct-flash { 0%{transform:scale(1) translateY(0)} 35%{transform:scale(1.35) translateY(-12px)} 65%{transform:scale(1.1) translateY(-5px)} 100%{transform:scale(1) translateY(0)} }
+@keyframes enhance-jump  { 0%{transform:scale(1) translateY(0)} 25%{transform:scale(1.3) translateY(-18px)} 55%{transform:scale(1.1) translateY(-8px)} 75%{transform:scale(1.3) translateY(-15px)} 100%{transform:scale(1) translateY(0)} }
+@keyframes ripple        { 0%{transform:scaleX(1) scaleY(1);opacity:.6} 100%{transform:scaleX(2.5) scaleY(.3);opacity:0} }
+
+/* ── Duck animations ─────────────────────────────────────────────────────── */
+.duck                { transition: left .7s cubic-bezier(.34,1.56,.64,1); }
+.duck.bobbing        { animation: bob 1.8s ease-in-out infinite; }
+.duck.correct        { animation: correct-flash .5s ease-out; }
+.duck.enhance        { animation: enhance-jump .6s ease-out; }
+.duck.frozen         { animation: frozen-shake .4s ease-in-out infinite; filter: hue-rotate(200deg) brightness(1.3); }
+.duck.fire-anim      { animation: fire-shake .2s ease-in-out infinite; }
+.duck.sinking        { animation: correct-flash .6s ease-in-out; }
+
+/* ── Card ────────────────────────────────────────────────────────────────── */
+.card-glass {
+  background: var(--card-bg);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+}
+
+/* ── Progress bar ────────────────────────────────────────────────────────── */
+.progress-bar { transition: width .6s cubic-bezier(.34,1.56,.64,1); }
+
+/* ── Power-up badges ─────────────────────────────────────────────────────── */
+.powerup-badge        { animation: powerup-float 2.5s ease-in-out infinite; }
+.powerup-badge.freeze { background: linear-gradient(135deg,#4dd0e1,#006064) !important; }
+.powerup-badge.fire   { background: linear-gradient(135deg,#ff7043,#b71c1c) !important; }
+.powerup-badge.enhance{ background: linear-gradient(135deg,#ffd600,#e65100) !important; }
+
+/* ── Fire border ─────────────────────────────────────────────────────────── */
+.fire-border { animation: fire-border .6s ease-in-out infinite; border-width: 3px; }
+
+/* ── Navbar ──────────────────────────────────────────────────────────────── */
+.navbar {
+  background: rgba(1,87,155,0.93);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+}
+
+/* ── Admin table ─────────────────────────────────────────────────────────── */
+.admin-table th { background:#e3f2fd; font-weight:700; text-align:left; padding:10px 14px; }
+.admin-table td { padding:10px 14px; border-bottom:1px solid #e2e8f0; }
+.admin-table tr:hover td { background:#f0f9ff; }
