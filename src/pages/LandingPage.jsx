@@ -183,10 +183,20 @@ export default function LandingPage() {
   }, [displayName, user, navigate]);
 
   function handleCreate() {
+    if (!displayName) {
+      setError('Please log in or play as guest first.');
+      setTimeout(() => { setMode(null); navigate('/auth'); }, 1500);
+      return;
+    }
     setError(''); setLoading(true); playTone(440, 0.1);
     socket.emit('create_room', { name: displayName, userId: user?.id || null, maxPlayers });
   }
   function handleJoin() {
+    if (!displayName) {
+      setError('Please log in or play as guest first.');
+      setTimeout(() => { setMode(null); navigate('/auth'); }, 1500);
+      return;
+    }
     if (!joinCode.trim()) { setError('Please enter a room code'); return; }
     setError(''); setLoading(true); playTone(440, 0.1);
     socket.emit('join_room', { name: displayName, code: joinCode.trim().toUpperCase(), userId: user?.id || null });
